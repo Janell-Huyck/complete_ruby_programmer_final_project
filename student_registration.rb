@@ -27,12 +27,7 @@ class Menu
       when 3
         update_this_student = false
         until update_this_student do
-          if !@selected_student
-            @selected_student = Student.new.retrieve_by_id_or_name
-          end
-          puts "\n\nYour selected student is: #{@selected_student.first_name} #{@selected_student.last_name}"
-          puts "Student id number: #{@selected_student.student_id}"
-          puts "Student major: #{@selected_student.major}\n"
+          print_selected_student
           print "Edit this student?  [Y/N] :"
           if gets.chomp!.downcase[0] == 'y'
             update_this_student = true
@@ -42,7 +37,18 @@ class Menu
         end
         @selected_student.update_registration(@selected_student)
       when 4
-        puts "pls delete student"
+        delete_this_student = false
+        until delete_this_student do
+          print_selected_student
+          print "Delete this student? [Y/N] :"
+          if gets.chomp!.downcase[0] == 'y'
+            delete_this_student = true
+          else
+            @selected_student = Student.new.retrieve_by_id_or_name
+          end
+        end
+        @selected_student.delete_registration
+        @selected_student = nil
       when 5
         print_goodbye_message
         @quit_program = true
@@ -95,34 +101,17 @@ class Menu
       false
     end
   end
+
+  def print_selected_student
+    if !@selected_student
+      @selected_student = Student.new.retrieve_by_id_or_name
+    end
+    puts "\n\nYour selected student is: \n"
+    puts "First name: #{@selected_student.first_name}"
+    puts "Last name: #{@selected_student.last_name}"
+    puts "Student id number: #{@selected_student.student_id}"
+    puts "Student major: #{@selected_student.major}\n"
+  end
 end
-
-
-#
-
-#
-#   # student_csv = CSV.read("#{records[0]}")
-#   # p student_csv
-#
-#
-#   #get student id if known
-#   # confirm.  if no, or not known
-#   # get first name
-#   # get last name
-#   # pull out list of students with name
-#   # handle if none
-#   # select from list
-#   # return the student
-#
-#
-# def new_registration
-#   new_student = Student.new
-#   new_student.create_new_student
-#
-#   puts ""
-#   puts "Registration complete for #{new_student.full_name}. The student ID is #{new_student.student_id}."
-#   puts ""
-#   new_student
-# end
 
 Menu.new.perform
